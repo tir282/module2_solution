@@ -37,6 +37,16 @@ $(function () { // Same as document.addEventListener("DOMContentLoaded"...
       string=string.replace(new RegExp(propToReplace,"g"),propValue);
       return string;
     }
+    var switchMenuToActive= function() {
+      var classes=document.querySelector("#navHomebutton").className;
+      classes= classes.replace(new RegExp("active", "g"),"");
+      
+      classes= document.querySelector("#navMenuButton").className;
+      if(classes.indexOf("active")===-1){
+        classes += " active";
+        document.querySelector("#navMenuButton").className = classes;
+      }
+    };
 
     document.addEventListener("DOMContentLoaded", function (event){
 
@@ -150,6 +160,15 @@ function insertItemPrice(html,pricePropName,priceValue){
   return html;
 
 
+}
+function insertItemPortionName(html, portionPropName, portionValue){
+  
+  if(!portionValue){
+    return insertProperty(html, portionPropName , "");
+  }
+  portionValue="( "+ portionValue +" )";
+  html= insertProperty(html, portionPropName , portionValue);
+  return html;
 }
 
 

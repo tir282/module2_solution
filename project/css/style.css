@@ -114,7 +114,7 @@ body{
 #testimonials p:(nth-child(2)){
     margin-top: 25px;
 }
-.text-centre{
+.text-center{
     text-align: center;
     color: #f6b319;
 }

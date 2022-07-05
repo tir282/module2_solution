@@ -17,6 +17,9 @@ $(function () { // Same as document.addEventListener("DOMContentLoaded"...
     var allCategoriesUrl="https://davids-restaurant.herokuapp.com/categories.json";
     var categoriesTitleHtml="snippets/categories-title-snippet.html";
     var categoryHtml="snippets/category-snippets.html";
+    var menuItemsUrl="https://davids-restaurant.herokuapp.com/menu_items.json?category=";
+    var menuItemsTileHtml="snippets/menu-item-title.html";
+    var menuItemHtml="snippets/menu-item.html";
 
     var insertHtml= function (selector, html){
         var targetElem= document.querySelector(selector);
@@ -24,7 +27,7 @@ $(function () { // Same as document.addEventListener("DOMContentLoaded"...
     };
 
     var showLoading = function (selector){
-        var html="<div class='text-centre'>";
+        var html="<div class='text-center'>";
         html += "<img src='images/ajax-loader.gif'></div>";
         insertHtml(selector, html);
     };
@@ -52,6 +55,13 @@ $(function () { // Same as document.addEventListener("DOMContentLoaded"...
         allCategoriesUrl,
         builAndShowCategoriesHTML);
       
+    };
+
+    dc.loadMenuItems= function(categoryShort){
+      showLoading("#main-content");
+      $ajaxUtils.sendGetRequest(
+        menuItemsUrl + categoryShort,
+        buildAndShowmenuItemHtml);
     };
 
     function builAndShowCategoriesHTML(categories){
@@ -84,6 +94,67 @@ function buildCategoriesViewHtml(categories,categoriesTitleHtml,categoryHtml){
   finalHtml += "</section";
   return finalHtml;
 }
-  global.$dc=dc
+
+function buildAndShowmenuItemHtml (categoryMenuItems){
+  $ajaxUtils.sendGetRequest(
+    menuItemsTileHtml,
+    function(menuItemsTileHtml){
+      $ajaxUtils.sendGetRequest(
+        menuItemHtml,
+        function (menuItemHtml) {
+          var menuItemsViewHtml= buildMenuItemsViewHtml(categoryMenuItems,menuItemsTitleHtml,menuItemHtml);
+          insertHtml("#main-content", menuItemsViewHtml);
+        },
+      false);
+    },
+  false);
+}
+function buildMenuItemsViewHtml(categoryMenuItems,menuItemsTitleHtml,menuItemHtml){
+
+  menuItemsTitleHtml= insertProperty(menuItemsTileHtml,"name",
+  categoryMenuItems.category.name);
+
+  menuItemsTitleHtml= insertProperty(menuItemsTileHtml,"name",
+  categoryMenuItems.category.special_instructions);
+  var finalHtml= menuItemsTileHtml;
+  finalHtml += "<section class='row'>";
   
+  var menuItems= categoryMenuItems.menu_items;
+  var catShortName= categoryMenuItems.category.short_name;
+  for(var i=0; i<menuItems.lenght;i++){
+    var html= menuItemHtml;
+    html=insertProperty(html, "short_name", menuItems[i].short_name);
+    html=insertProperty(html,"catShortName",catShortName);
+    html=insertItemPrice(html,"price_small",menuItems[i].price_small);
+    html=insertItemPortionName(html,"samll_portion_name",menuItems[i].small_portiion_name);
+    html=insertItemPrice(html,"price_large",menuItems[i].price_large);
+    html=insertItemPortionName(html,"large_portion_name",menuItems[i].large_portiion_name);
+    html=insertProperty(html,"name",menuItems[i].name);   
+    html=insertProperty(html,"description",menuItems[i].description);
+
+    if(i%2 !=0){
+      html+= "<div class='clearflix visible-lg-block visible-md-block'></div>";
+
+    }
+    finalHtml += html;
+  }
+  finalHtml += "</section>";
+  return finalHtml;
+}
+function insertItemPrice(html,pricePropName,priceValue){
+  if(!priceValue){
+    return insertProperty(html, pricePropName,"");;
+  }
+  priceValue= "$" + priceValue.toFixed(2);
+  html= insertProperty(html,portionPropName,portionValue);
+  return html;
+
+
+}
+
+
+
+
+  global.$dc=dc
+
 })(window);

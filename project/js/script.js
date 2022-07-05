@@ -20,7 +20,7 @@ $(function () { // Same as document.addEventListener("DOMContentLoaded"...
 
     var insertHtml= function (selector, html){
         var targetElem= document.querySelector(selector);
-        targetElem.innerhtml= html;
+        targetElem.innerHTML= html;
     };
 
     var showLoading = function (selector){
@@ -44,7 +44,46 @@ $(function () { // Same as document.addEventListener("DOMContentLoaded"...
                 document.querySelector("#main-content").innerHTML = responseText;
             },
         false);
-    })
+    });
 
+    dc.loadMenuCategories= function (){
+      showLoading("#main-content");
+      $ajaxUtils.sendGetRequest(
+        allCategoriesUrl,
+        builAndShowCategoriesHTML);
+      
+    };
+
+    function builAndShowCategoriesHTML(categories){
+      $ajaxUtils.sendGetRequest(
+        categoriesTitleHtml,
+        function(categoriesTitleHtml){
+       $ajaxUtils.sendGetRequest(
+        categoryHtml,
+        function(categoryHtml){
+          var categoriesViewHtml= buildCategoriesViewHtml(categories,categoriesTitleHtml,categoryHtml);
+          insertHtml("#main-content", categoriesViewHtml);
+        },
+      false);
+    },
+    false);
+  }
+function buildCategoriesViewHtml(categories,categoriesTitleHtml,categoryHtml){
+
+  var finalHtml= categoriesTitleHtml;
+  finalHtml += "<section class='row'>";
+
+  for(var i=0; i<categories.lenght;i++){
+    var html= categoryHtml;
+    var name="" + categories[i].name;
+    var short_name="" + categories[i].short_name;
+    html=insertProperty(html, "name" , name);
+    html= insertProperty(html, "short_name", short_name);
+    finalHtml += html;
+  }
+  finalHtml += "</section";
+  return finalHtml;
+}
   global.$dc=dc
+  
 })(window);

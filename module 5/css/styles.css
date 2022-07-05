@@ -110,6 +110,9 @@ body {
 #testimonials p:nth-child(2) {
   margin-top: 25px;
 }
+.text-center{
+  color: #f6b319;
+}
 /* END FOOTER */
 
 
